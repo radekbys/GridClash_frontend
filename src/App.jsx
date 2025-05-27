@@ -1,7 +1,12 @@
 import './App.css'
+import TicTacToeGame from './components/page'
 
 function App () {
-  return <></>
+  return (
+    <>
+      <TicTacToeGame />
+    </>
+  )
 }
 
 export default App
