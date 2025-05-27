@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import './globals.css'
 
-URL = 'http://localhost:4000'
+URL = 'https://grid-clash-backend-326356427471.europe-west1.run.app'
 
 let gameId = null
 let winner = null
