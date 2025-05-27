@@ -87,7 +87,6 @@ export default function TicTacToeGame () {
 
     const obj = await res.json()
 
-    console.log(obj.game.winner)
     if (obj.game.winner && obj.game.winner !== 'unddefined') {
       if (obj.game.winner === 'X') {
         winner = players[0].name
