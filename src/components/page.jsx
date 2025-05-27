@@ -3,6 +3,11 @@
 import { useState } from 'react'
 import './globals.css'
 
+URL = 'http://localhost:4000'
+
+let gameId = null
+let winner = null
+
 export default function TicTacToeGame () {
   const [gameStarted, setGameStarted] = useState(false)
   const [players, setPlayers] = useState([
@@ -26,38 +31,9 @@ export default function TicTacToeGame () {
     return turnLog.length % 2 === 0 ? 'X' : 'O'
   }
 
-  // Derive winner from current board state
-  const getDerivedWinner = board => {
-    const winningCombinations = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8], // rows
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8], // columns
-      [0, 4, 8],
-      [2, 4, 6] // diagonals
-    ]
-
-    for (const combination of winningCombinations) {
-      const [a, b, c] = combination
-      if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-        const winningPlayer = players.find(p => p.symbol === board[a])
-        return winningPlayer?.name || board[a]
-      }
-    }
-
-    if (board.every(cell => cell !== null)) {
-      return 'tie'
-    }
-
-    return null
-  }
-
   // Derive all current game state
   const board = getDerivedBoard()
   const currentPlayer = getDerivedCurrentPlayer()
-  const winner = getDerivedWinner(board)
   const gameOver = winner !== null
 
   const handlePlayerNameChange = (index, name) => {
@@ -66,14 +42,12 @@ export default function TicTacToeGame () {
     setPlayers(newPlayers)
   }
 
-  const startGame = () => {
-    if (players[0].name.trim() && players[1].name.trim()) {
-      setGameStarted(true)
-    }
-  }
-
-  const resetGame = () => {
-    setTurnLog([])
+  const resetGame = async () => {
+    const res = await fetch(URL + '/start')
+    const obj = await res.json()
+    gameId = obj.id
+    setTurnLog(obj.log)
+    winner = null
   }
 
   const backToStart = () => {
@@ -81,7 +55,14 @@ export default function TicTacToeGame () {
     setTurnLog([])
   }
 
-  const handleCellClick = index => {
+  const startGame = () => {
+    if (players[0].name.trim() && players[1].name.trim()) {
+      setGameStarted(true)
+      resetGame()
+    }
+  }
+
+  const handleCellClick = async index => {
     if (board[index] || gameOver) return
 
     const row = Math.floor(index / 3)
@@ -93,7 +74,29 @@ export default function TicTacToeGame () {
       column: column + 1 // 1-indexed for display
     }
 
-    setTurnLog([...turnLog, newTurn])
+    const res = await fetch(URL + '/nextTurn', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        gameId: gameId,
+        turn: newTurn
+      })
+    })
+
+    const obj = await res.json()
+
+    console.log(obj.game.winner)
+    if (obj.game.winner && obj.game.winner !== 'unddefined') {
+      if (obj.game.winner === 'X') {
+        winner = players[0].name
+      } else if (obj.game.winner === 'O') {
+        winner = players[1].name
+      } else winner = 'tie'
+    }
+
+    setTurnLog([...obj.game.log])
   }
 
   const getCurrentPlayerName = () => {
@@ -180,7 +183,7 @@ export default function TicTacToeGame () {
                 <button
                   key={index}
                   className='cell'
-                  onClick={() => handleCellClick(index)}
+                  onClick={async () => await handleCellClick(index)}
                   disabled={!!cell || gameOver}
                 >
                   {cell}
