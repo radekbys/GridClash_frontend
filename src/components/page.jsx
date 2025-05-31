@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import './globals.css'
+import { useEffect } from 'react'
 
 URL = 'https://grid-clash-backend-326356427471.europe-west1.run.app'
+// URL = 'http://localhost:4000'
 
 let gameId = null
-let winner = null
+//let winner = null
 
 export default function TicTacToeGame () {
   const [gameStarted, setGameStarted] = useState(false)
@@ -15,6 +17,7 @@ export default function TicTacToeGame () {
     { name: '', symbol: 'O' }
   ])
   const [turnLog, setTurnLog] = useState([])
+  const [winner, setWinner] = useState(null)
 
   // Derive board state from turn log
   const getDerivedBoard = () => {
@@ -36,6 +39,40 @@ export default function TicTacToeGame () {
   const currentPlayer = getDerivedCurrentPlayer()
   const gameOver = winner !== null
 
+  useEffect(() => {
+    const loadSavedGame = async () => {
+      const savedGameId = localStorage.getItem('gameId')
+      if (!savedGameId) return // nothing to load
+
+      try {
+        const res = await fetch(`${URL}/game/${savedGameId}`)
+        if (!res.ok) throw new Error('Game not found')
+
+        const data = await res.json()
+
+        gameId = data.game.id
+        setPlayers(data.game.players)
+        setTurnLog(data.game.log)
+        setGameStarted(true)
+
+        if (data.game.winner) {
+          if (data.game.winner === 'X') {
+            setWinner(data.game.players[0].name)
+          } else if (data.game.winner === 'O') {
+            setWinner(data.game.players[1].name)
+          } else setWinner('tie')
+        } else {
+          setWinner(null)
+        }
+      } catch (err) {
+        setError(err.message)
+        console.error('Failed to load saved game:', err)
+      }
+    }
+
+    loadSavedGame()
+  }, [])
+
   const handlePlayerNameChange = (index, name) => {
     const newPlayers = [...players]
     newPlayers[index].name = name
@@ -43,11 +80,21 @@ export default function TicTacToeGame () {
   }
 
   const resetGame = async () => {
-    const res = await fetch(URL + '/start')
+    const res = await fetch(URL + '/start', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        players: players
+      })
+    })
+
     const obj = await res.json()
     gameId = obj.id
+    localStorage.setItem('gameId', obj.id)
     setTurnLog(obj.log)
-    winner = null
+    setWinner(null)
   }
 
   const backToStart = () => {
@@ -87,12 +134,12 @@ export default function TicTacToeGame () {
 
     const obj = await res.json()
 
-    if (obj.game.winner && obj.game.winner !== 'unddefined') {
+    if (obj.game.winner && obj.game.winner !== 'undefined') {
       if (obj.game.winner === 'X') {
-        winner = players[0].name
+        setWinner(players[0].name)
       } else if (obj.game.winner === 'O') {
-        winner = players[1].name
-      } else winner = 'tie'
+        setWinner(players[1].name)
+      } else setWinner('tie')
     }
 
     setTurnLog([...obj.game.log])
