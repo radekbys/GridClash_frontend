@@ -106,7 +106,7 @@ export default function TicTacToeGame () {
     return (
       <div className='container'>
         <div className='start-page'>
-          <h1>Tic Tac Toe</h1>
+          <h1>Grid Clash</h1>
           <div className='player-inputs'>
             <div className='input-group'>
               <label htmlFor='playerX'>Player X Name:</label>
@@ -147,7 +147,7 @@ export default function TicTacToeGame () {
     <div className='container'>
       <div className='game-page'>
         <header className='game-header'>
-          <h1>Tic Tac Toe</h1>
+          <h1>Grid Clash</h1>
           <div className='players-info'>
             <div
               className={`player-info ${currentPlayer === 'X' ? 'active' : ''}`}
