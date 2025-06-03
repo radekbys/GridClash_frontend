@@ -57,9 +57,9 @@ export default function TicTacToeGame () {
 
         if (data.game.winner) {
           if (data.game.winner === 'X') {
-            setWinner(data.game.players[0].name)
+            setWinner(data.game.players[0].name + '(X)')
           } else if (data.game.winner === 'O') {
-            setWinner(data.game.players[1].name)
+            setWinner(data.game.players[1].name + '(O)')
           } else setWinner('tie')
         } else {
           setWinner(null)
@@ -136,9 +136,9 @@ export default function TicTacToeGame () {
 
     if (obj.game.winner && obj.game.winner !== 'undefined') {
       if (obj.game.winner === 'X') {
-        setWinner(players[0].name)
+        setWinner(players[0].name + '(X)')
       } else if (obj.game.winner === 'O') {
-        setWinner(players[1].name)
+        setWinner(players[1].name + '(O)')
       } else setWinner('tie')
     }
 
