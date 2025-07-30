@@ -8,4 +8,4 @@ Link to the repository with the backend:
 https://github.com/radekbys/GridClash_backend
 
 I was tasked with creating a web based, client server application, using an api.
-Purpose of this project was communication betwen backend and frontend, it was not a css or html excercise, therefore I could use V0 chat for generating styling and page layout. Logic was written manually.
+Purpose of this project was communication betwen backend and frontend. It was not a css or html excercise, therefore I could use V0 chat to generate styling and page layout. Logic was written manually.
