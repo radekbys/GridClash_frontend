@@ -1,7 +1,7 @@
 # GridClash_frontend
 frontend for a web based tic tac toe game
 
-App frontend has ben hosted, you can play using below link:
+App frontend has ben hosted, you can play using link:
 https://gridclash-frontend-326356427471.europe-west1.run.app
 
 Link to the repository with the backend:
